@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
-import { listLogEntries } from './api';
+import { listLogEntries, deleteLogEntry } from './api';
 import LogEntryForm from './LogEntryForm';
 
 export default class App extends Component {
@@ -18,12 +18,19 @@ export default class App extends Component {
             showPopup: {},
             newEntry: null,
         };
-        this.renderMarkers = this.renderMarkers.bind(this);
-        this.renderPopup = this.renderPopup.bind(this);
+        this.closePopup = this.closePopup.bind(this);
+        this.getEntries = this.getEntries.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.showAddEntryPopup = this.showAddEntryPopup.bind(this);
         this.renderAddEntryPopup = this.renderAddEntryPopup.bind(this);
-        this.getEntries = this.getEntries.bind(this);
+        this.renderMarkers = this.renderMarkers.bind(this);
+        this.renderPopup = this.renderPopup.bind(this);
+    }
+
+    closePopup() {
+        this.setState({
+            showPopup: {}
+        });
     }
 
     getEntries() {
@@ -138,27 +145,30 @@ export default class App extends Component {
     }
 
     renderPopup(entry) {
-        if (this.state.showPopup[entry._id])
+        if (this.state.showPopup[entry._id]) {
+            const props = {
+                latitude: entry.latitude,
+                longitude: entry.longitude,
+                onClose: this.closePopup,
+                anchor: "top",
+                dynamicPosition: true,
+            };
             return (
-                <Popup
-                    latitude={entry.latitude}
-                    longitude={entry.longitude}
-                    closeButton={true}
-                    closeOnClick={false}
-                    onClose={() => this.setState({
-                        showPopup: {}
-                    })}
-                    anchor="top"
-                    dynamicPosition={true}
-                >
+                <Popup {...props}>
                     <div className="popup">
                         <h3>{entry.title}</h3>
                         <p>{entry.comments}</p>
                         <small>등록날짜: {new Date(entry.visitDate).toLocaleString()}</small>
-                { entry.image && <img src={entry.image} alt={entry.title}/>}
+                        { entry.image && <img src={entry.image} alt={entry.title}/>}
+                        <button onClick={async () => {
+                            await deleteLogEntry(entry._id);
+                            this.getEntries();
+                            this.closePopup();
+                        }}>Delete</button>
                     </div>
                 </Popup>
             );
+        }
         return null;
     }
 

@@ -6,7 +6,9 @@
 
 - [ ] Enhance popup style
   - [ ] Make it fade, rather than showing/hiding instantaneously.
-- [ ] Create a delete button
+- [x] Create a delete button
+- [ ] Create an update button
+- [ ] Show rating
 - [ ] Enhance form style
   - [ ] Change the form from a popup to a modal
 - [ ] Make the map responsive
