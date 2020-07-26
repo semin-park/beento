@@ -3,6 +3,28 @@ import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import { listLogEntries, deleteLogEntry } from './api';
 import LogEntryForm from './LogEntryForm';
 
+
+const MarkerSVG = (props) => {
+    return (
+        <svg
+            style={{
+                height: '30px',
+                width: '30px',
+            }}
+            className={`marker ${props.color}`} version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512"
+        >
+            <g>
+                <path d="M441.443,133.2c-17.999-58.2-65.4-105.601-123.6-123.6c-20.4-6.301-41.4-9.6-61.8-9.6
+                    c-41.7,0-81.899,12.9-115.499,38.101C90.742,74.7,61.043,133.2,61.043,195c0,42.599,13.5,83.101,39,117.001l156,199.999
+                    l156-199.999C450.142,261,460.943,195.901,441.443,133.2z M256.043,300c-57.9,0-105-47.1-105-105s47.1-105,105-105
+                    s105,47.1,105,105S313.943,300,256.043,300z"/>
+            </g>
+            <path d="M412.043,312.001L256.043,512V300c57.9,0,105-47.1,105-105s-47.1-105-105-105V0
+                c20.4,0,41.4,3.3,61.8,9.6c58.2,17.999,105.601,65.4,123.6,123.6C460.943,195.901,450.142,261,412.043,312.001z"/>
+        </svg>
+    );
+}
+
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -12,98 +34,109 @@ export default class App extends Component {
                 height: '100vh',
                 latitude: 37.5665,
                 longitude: 126.9780,
-                zoom: 12
+                zoom: 15
             },
             logEntries: [],
-            showPopup: {},
-            newEntry: null,
+            showPopup: false,
+            popupTarget: null,
+            formEntry: null,
         };
         this.closePopup = this.closePopup.bind(this);
-        this.getEntries = this.getEntries.bind(this);
+        this.retrieveEntries = this.retrieveEntries.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.showAddEntryPopup = this.showAddEntryPopup.bind(this);
-        this.renderAddEntryPopup = this.renderAddEntryPopup.bind(this);
+        this.attachNewEntry = this.attachNewEntry.bind(this);
+        this.renderAddEntry = this.renderAddEntry.bind(this);
         this.renderMarkers = this.renderMarkers.bind(this);
         this.renderPopup = this.renderPopup.bind(this);
+
+        this.defaultPopupProps = {
+            closeButton: true,
+            closeOnClick: false,
+            anchor: "top",
+            dynamicPosition: true,
+        };
     }
 
     closePopup() {
         this.setState({
-            showPopup: {}
+            showPopup: false
         });
     }
 
-    getEntries() {
-        listLogEntries().then((logEntries) => {
-            this.setState({
-                logEntries: logEntries,
-            });
+    async retrieveEntries() {
+        const logEntries = await listLogEntries();
+        this.setState({
+            logEntries: logEntries,
         });
     }
 
     componentDidMount() {
-        this.getEntries();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                this.setState({
+                    viewport: {
+                        ...this.state.viewport,
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude,
+                    }
+                });
+            }, () => {
+                console.log('Failed to retrieve location');
+            });
+        }
+        this.retrieveEntries();
     }
 
-    showAddEntryPopup(event) {
+    attachNewEntry(event) {
         if (event.target.localName === 'button')
             return;
         const [lng, lat] = event.lngLat;
         this.setState({
-            newEntry: {
+            formEntry: {
                 latitude: lat,
                 longitude: lng
             }
         });
     }
 
-    renderAddEntryPopup() {
-        const newEntry = this.state.newEntry;
-        if (newEntry === null) 
+    renderEntryFormPopup(entry) {
+        const props = {
+            latitude: entry.latitude,
+            longitude: entry.longitude,
+            onClose: () => this.setState({
+                formEntry: null
+            }),
+            ...this.defaultPopupProps,
+        };
+        return (
+            <Popup {...props}>
+                <div className="popup">
+                    <LogEntryForm
+                        latitude={entry.latitude}
+                        longitude={entry.longitude}
+                        onClose={() => {
+                            this.setState({formEntry: null});
+                            this.retrieveEntries();
+                        }}
+                    />
+                </div>
+            </Popup>
+        );
+    }
+
+    renderAddEntry() {
+        const formEntry = this.state.formEntry;
+        if (!this.state.showPopup || this.state.popupTarget !== formEntry)
             return null;
         return (
             <div>
                 <Marker
-                    latitude={newEntry.latitude}
-                    longitude={newEntry.longitude}
+                    latitude={formEntry.latitude}
+                    longitude={formEntry.longitude}
                 >
-                    <svg
-                        style={{
-                            height: '30px',
-                            width: '30px',
-                        }}
-                        className="marker red" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512"
-                    >
-                        <g>
-                            <path d="M441.443,133.2c-17.999-58.2-65.4-105.601-123.6-123.6c-20.4-6.301-41.4-9.6-61.8-9.6
-                                c-41.7,0-81.899,12.9-115.499,38.101C90.742,74.7,61.043,133.2,61.043,195c0,42.599,13.5,83.101,39,117.001l156,199.999
-                                l156-199.999C450.142,261,460.943,195.901,441.443,133.2z M256.043,300c-57.9,0-105-47.1-105-105s47.1-105,105-105
-                                s105,47.1,105,105S313.943,300,256.043,300z"/>
-                        </g>
-                        <path d="M412.043,312.001L256.043,512V300c57.9,0,105-47.1,105-105s-47.1-105-105-105V0
-                            c20.4,0,41.4,3.3,61.8,9.6c58.2,17.999,105.601,65.4,123.6,123.6C460.943,195.901,450.142,261,412.043,312.001z"/>
-                    </svg>
+                    <MarkerSVG color="red"/>
                 </Marker>
-                <Popup
-                    latitude={newEntry.latitude}
-                    longitude={newEntry.longitude}
-                    closeButton={true}
-                    closeOnClick={false}
-                    onClose={() => this.setState({
-                        newEntry: null
-                    })}
-                    anchor="top"
-                    dynamicPosition={true}
-                >
-                    <div className="popup">
-                        <LogEntryForm onClose={() => {
-                            this.setState({
-                                newEntry: null
-                            });
-                            this.getEntries();
-                        }} latitude={newEntry.latitude} longitude={newEntry.longitude} />
-                    </div>
-                </Popup>
+                {this.renderEntryFormPopup(formEntry)}
             </div>
         );
     }
@@ -114,29 +147,15 @@ export default class App extends Component {
                 <div
                     key={entry._id}
                     onClick={() => this.setState({
-                        showPopup: {[entry._id]: true}
+                        showPopup: true,
+                        popupTarget: entry,
                     })}
                 >
                     <Marker
                         latitude={entry.latitude}
                         longitude={entry.longitude}
                     >
-                        <svg
-                            style={{
-                                height: '30px',
-                                width: '30px',
-                            }}
-                            className="marker yellow" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512"
-                        >
-                            <g>
-                                <path d="M441.443,133.2c-17.999-58.2-65.4-105.601-123.6-123.6c-20.4-6.301-41.4-9.6-61.8-9.6
-                                    c-41.7,0-81.899,12.9-115.499,38.101C90.742,74.7,61.043,133.2,61.043,195c0,42.599,13.5,83.101,39,117.001l156,199.999
-                                    l156-199.999C450.142,261,460.943,195.901,441.443,133.2z M256.043,300c-57.9,0-105-47.1-105-105s47.1-105,105-105
-                                    s105,47.1,105,105S313.943,300,256.043,300z"/>
-                            </g>
-                            <path d="M412.043,312.001L256.043,512V300c57.9,0,105-47.1,105-105s-47.1-105-105-105V0
-                                c20.4,0,41.4,3.3,61.8,9.6c58.2,17.999,105.601,65.4,123.6,123.6C460.943,195.901,450.142,261,412.043,312.001z"/>
-                        </svg>
+                        <MarkerSVG color="yellow"/>
                     </Marker>
                     {this.renderPopup(entry)}
                 </div>
@@ -145,13 +164,12 @@ export default class App extends Component {
     }
 
     renderPopup(entry) {
-        if (this.state.showPopup[entry._id]) {
+        if (this.state.showPopup && this.state.popupTarget === entry) {
             const props = {
                 latitude: entry.latitude,
                 longitude: entry.longitude,
                 onClose: this.closePopup,
-                anchor: "top",
-                dynamicPosition: true,
+                ...this.defaultPopupProps
             };
             return (
                 <Popup {...props}>
@@ -160,9 +178,12 @@ export default class App extends Component {
                         <p>{entry.comments}</p>
                         <small>등록날짜: {new Date(entry.visitDate).toLocaleString()}</small>
                         { entry.image && <img src={entry.image} alt={entry.title}/>}
+                        <button onClick={() => {
+                            this.closePopup();
+                        }}>Update</button>
                         <button onClick={async () => {
                             await deleteLogEntry(entry._id);
-                            this.getEntries();
+                            this.retrieveEntries();
                             this.closePopup();
                         }}>Delete</button>
                     </div>
@@ -176,13 +197,23 @@ export default class App extends Component {
         return (
             <ReactMapGL
                 {...this.state.viewport}
-                onViewportChange={(viewport) => this.setState({viewport})}
+                onViewportChange={(viewport) => this.setState({viewport: viewport})}
                 mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
                 mapStyle='mapbox://styles/spark9625/ckd031brp0mr51irtt15reiee'
-                onClick={this.showAddEntryPopup}
+                onClick={(event) => {
+                    if (this.state.showPopup) {
+                        this.setState({
+                            showPopup: false,
+                            popupTarget: null,
+                        });
+                    } else {
+                        const formEntry = this.attachNewEntry(event);
+                        this.setState({showPopup: true, popupTarget: this.state.formEntry});
+                    }
+                }}
             >
                 {this.renderMarkers()}
-                {this.renderAddEntryPopup()}
+                {this.renderAddEntry()}
             </ReactMapGL>
         );
     }
