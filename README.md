@@ -4,15 +4,12 @@
 
 ### Style
 
-- [ ] Enhance popup style
-  - [ ] Make it fade, rather than showing/hiding instantaneously.
+- [x] Enhance popup style
 - [x] Create a delete button
-- [ ] Create an update button
+- [x] Create an update button
 - [ ] Show rating
-- [ ] Enhance form style
-  - [ ] Change the form from a popup to a modal
-- [ ] Make the map responsive
-- [ ] Show current position with a marker
+- [x] Enhance form style
+- [x] Make the map responsive
 
 ### Features
 

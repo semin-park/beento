@@ -11,7 +11,7 @@ export default function Map(props) {
     const [viewport, setViewport] = useState({
         width: '100vw',
         height: '100vh',
-        zoom: 15,
+        zoom: 3,
         latitude: 37.5665,
         longitude: 126.9780,
     });
@@ -22,6 +22,7 @@ export default function Map(props) {
                     ...viewport,
                     latitude: pos.coords.latitude,
                     longitude: pos.coords.longitude,
+                    zoom: 15,
                 });
             }, err => {
                 console.log(err);
@@ -56,10 +57,12 @@ export default function Map(props) {
                     key={log._id}
                     latitude={log.latitude}
                     longitude={log.longitude}
-                    color="yellow"
+                    color="default"
                     onClick={() => {
+                        setIsFormUpdate(false);
                         setLogAttempt(false);
                         setPopupTarget(log);
+                        setIsFormUpdate(false);
                     }}
                 />
             );
@@ -73,6 +76,7 @@ export default function Map(props) {
             return;
         }
         if (popupTarget) {
+            setIsFormUpdate(false);
             setLogAttempt(false);
             setPopupTarget(null);
         } else {
@@ -90,12 +94,14 @@ export default function Map(props) {
             <Marker
                 latitude={popupTarget.latitude}
                 longitude={popupTarget.longitude}
-                color="red"
+                color={isFormUpdate ? "update" : "create"}
                 onClick={() => {}}
             />
         );
     };
 
+    const [formDefault, setFormDefault] = useState({});
+    const [isFormUpdate, setIsFormUpdate] = useState(false);
     const renderPopup = () => {
         let content;
         if (logAttempt) {
@@ -106,13 +112,29 @@ export default function Map(props) {
                         loadVisitLogs();
                         setLogAttempt(false);
                         setPopupTarget(null);
+                        setFormDefault({});
+                        setIsFormUpdate(false);
                     }}
+                    defaultValues={formDefault}
+                    update={isFormUpdate}
                 />
             );
         } else {
             content = (
                 <VisitLogContent
                     visitLog={popupTarget}
+                    onMarkerUpdate={(log) => {
+                        console.log(log);
+                        setLogAttempt(true);
+                        setIsFormUpdate(true);
+                        setFormDefault({
+                            title: log.title,
+                            comments: log.comments,
+                            description: log.description,
+                            image: log.image,
+                            visitDate: new Date(log.visitDate),
+                        });
+                    }}
                     onMarkerDelete={async () => {
                         await deleteVisitLog(popupTarget._id);
                         loadVisitLogs();
@@ -127,6 +149,7 @@ export default function Map(props) {
                 onClose={() => {
                     setLogAttempt(false);
                     setPopupTarget(null);
+                    setIsFormUpdate(false);
                 }}
                 render={content}
             />
