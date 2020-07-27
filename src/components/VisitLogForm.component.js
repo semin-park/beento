@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { Button } from 'reactstrap';
 import { createVisitLog } from '../api';
 
 export default function VisitLogForm(props) {
-    const [ loading, setLoading ] = useState(false);
-    const [ error, setError ] = useState('');
-    const { register, handleSubmit } = useForm();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const {register, handleSubmit} = useForm();
 
     const onSubmit = async (data) => {
         try {
@@ -20,29 +22,16 @@ export default function VisitLogForm(props) {
         }
     };
     return (
-        <form className="entry-form" onSubmit={handleSubmit(onSubmit)}>
-            { error ? <h3 className="error">{error}</h3> : null }
-            <div>
-                <label htmlFor="logEntryFormTitle">Title</label>
-                <input ref={register} name="title" id="logEntryFormTitle" type="text" required/>
-            </div>
-            <div>
-                <label htmlFor="logEntryFormComments">Comments</label>
-                <textarea ref={register} name="comments" id="logEntryFormComments" rows={3}/>
-            </div>
-            <div>
-                <label htmlFor="logEntryFormDescription">Description</label>
-                <textarea ref={register} name="description" id="logEntryFormDescription" rows={3}/>
-            </div>
-            <div>
-                <label htmlFor="logEntryFormImage">Image</label>
-                <input ref={register} name="image" id="logEntryFormImage"/>
-            </div>
-            <div>
-                <label htmlFor="logEntryFormVisitDate">Date</label>
-                <input ref={register} name="visitDate" id="logEntryFormVisitDate" type="date" required/>
-            </div>
-            <button disabled={loading}>{loading ? "Loading..." : "Create Entry"}</button>
-        </form>
+        <div className="form">
+            <AvForm onSubmit={handleSubmit(onSubmit)}>
+                { error ? <h3 className="error">{error}</h3> : null }
+                <AvField required name="title" label="Title" innerRef={register}/>
+                <AvField name="comments" label="Comments" type="textarea" rows={3} innerRef={register}/>
+                <AvField name="description" label="Description" type="textarea" rows={3} innerRef={register}/>
+                <AvField name="image" label="Image" innerRef={register}/>
+                <AvField required name="visitDate" label="Date" type="date" innerRef={register}/>
+                <button className='btn btn-primary submit' type='submit'>Create Entry</button>
+            </AvForm>
+        </div>
     );
 }

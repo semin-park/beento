@@ -10,6 +10,7 @@ export default function VisitLogPopup(props) {
         closeOnClick: false,
         anchor: "top",
         dynamicPosition: true,
+        captureScroll: true,
     };
     return (
         <Popup {...popupProps}>
