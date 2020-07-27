@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { createLogEntry } from './api';
+import { createVisitLog } from '../api';
 
-export default function LogEntryForm(props) {
+export default function VisitLogForm(props) {
     const [ loading, setLoading ] = useState(false);
     const [ error, setError ] = useState('');
     const { register, handleSubmit } = useForm();
@@ -10,9 +10,9 @@ export default function LogEntryForm(props) {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const created = await createLogEntry({...data, latitude: props.latitude, longitude: props.longitude});
+            const created = await createVisitLog({...data, latitude: props.visitLog.latitude, longitude: props.visitLog.longitude});
             console.log(created);
-            props.onClose();
+            props.onSubmit();
         } catch (err) {
             console.error(err);
             setError(err.message);
