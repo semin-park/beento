@@ -8,6 +8,10 @@ body {
   overflow: hidden;
 }
 
+#root {
+    height: 100%;
+}
+
 .marker {
     width: 30px;
     height: 30px;
@@ -48,3 +52,41 @@ body {
 .submit {
     width: 100%;
 }
+
+.rating { 
+    position: relative;
+    border: none;
+    display: inline-block;
+}
+
+.rating > input { display: none; } 
+.rating > label::before { 
+    margin: 5px;
+    font-size: 1.25em;
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f005";
+}
+
+.rating > .half::before { 
+    content: "\f089";
+    position: absolute;
+    overflow: hidden;
+}
+
+.rating > label { 
+    color: #ddd; 
+    float: right; 
+    margin-bottom: 0px;
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating.active:not(:checked) > label:hover, /* hover current star */
+.rating.active:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating.active > input:checked + label:hover, /* hover current star when changing rating */
+.rating.active > input:checked ~ label:hover,
+.rating.active > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating.active > input:checked ~ label:hover ~ label { color: #FFED85;  } 

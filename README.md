@@ -13,6 +13,6 @@
 
 ### Features
 
-- [ ] Add a navigation bar on the left
+- [x] Add a navigation bar
   - [ ] Add login with google / facebook
 - [ ] Add a button that can retrieve user's current location
