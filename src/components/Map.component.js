@@ -50,6 +50,12 @@ export default function Map(props) {
     };
     useEffect(loadVisitLogs, []);
 
+    const abortForm = () => {
+        setIsFormUpdate(false);
+        setLogAttempt(false);
+        setFormDefault({});
+    };
+
     const renderMarkers = () => {
         return visitLogs.map((log) => {
             return (
@@ -59,10 +65,8 @@ export default function Map(props) {
                     longitude={log.longitude}
                     color="default"
                     onClick={() => {
-                        setIsFormUpdate(false);
-                        setLogAttempt(false);
                         setPopupTarget(log);
-                        setIsFormUpdate(false);
+                        abortForm()
                     }}
                 />
             );
@@ -76,8 +80,7 @@ export default function Map(props) {
             return;
         }
         if (popupTarget) {
-            setIsFormUpdate(false);
-            setLogAttempt(false);
+            abortForm();
             setPopupTarget(null);
         } else {
             const [lng, lat] = event.lngLat;
@@ -110,10 +113,8 @@ export default function Map(props) {
                     visitLog={popupTarget}
                     onSubmit={() => {
                         loadVisitLogs();
-                        setLogAttempt(false);
+                        abortForm();
                         setPopupTarget(null);
-                        setFormDefault({});
-                        setIsFormUpdate(false);
                     }}
                     defaultValues={formDefault}
                     update={isFormUpdate}
@@ -132,6 +133,7 @@ export default function Map(props) {
                             comments: log.comments,
                             description: log.description,
                             image: log.image,
+                            rating: log.rating,
                             visitDate: new Date(log.visitDate),
                         });
                     }}
@@ -147,9 +149,8 @@ export default function Map(props) {
             <VisitLogPopup
                 visitLog={popupTarget}
                 onClose={() => {
-                    setLogAttempt(false);
+                    abortForm();
                     setPopupTarget(null);
-                    setIsFormUpdate(false);
                 }}
                 render={content}
             />
