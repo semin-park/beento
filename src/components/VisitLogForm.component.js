@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { AvForm, AvField, AvRadioGroup } from 'availity-reactstrap-validation';
 import { Button } from 'reactstrap';
 import { createVisitLog } from '../api';
+import Rating from './Rating.component';
 
 export default function VisitLogForm(props) {
     const [loading, setLoading] = useState(false);
@@ -25,11 +26,14 @@ export default function VisitLogForm(props) {
         <div className="popup">
             <AvForm onSubmit={handleSubmit(onSubmit)} model={props.defaultValues}>
                 { error ? <h3 className="error">{error}</h3> : null }
-                <AvField required name="title" label="Title" innerRef={register}/>
+                <AvField required name="title" label="Title" innerRef={register({required: true})}/>
                 <AvField name="comments" label="Comments" type="textarea" rows={3} innerRef={register}/>
                 <AvField name="description" label="Description" type="textarea" rows={3} innerRef={register}/>
                 <AvField name="image" label="Image" innerRef={register}/>
-                <AvField required name="visitDate" label="Date" type="date" innerRef={register}/>
+                <AvRadioGroup name="rating">
+                    <Rating innerRef={register} />
+                </AvRadioGroup>
+                <AvField required name="visitDate" label="Date" type="date" innerRef={register({required: true})}/>
                 <button className='btn btn-primary submit' type='submit'>{props.update ? "Update" : "Create Entry"}</button>
             </AvForm>
         </div>

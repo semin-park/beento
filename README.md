@@ -7,7 +7,7 @@
 - [x] Enhance popup style
 - [x] Create a delete button
 - [x] Create an update button
-- [ ] Show rating
+- [x] Show rating
 - [x] Enhance form style
 - [x] Make the map responsive
 

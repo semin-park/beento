@@ -1,4 +1,5 @@
 import React from 'react';
+import Rating from './Rating.component';
 
 export default function VisitLogContent(props) {
     const visitLog = props.visitLog;
@@ -8,6 +9,7 @@ export default function VisitLogContent(props) {
             <hr/>
             <p className="text-center">{visitLog.comments}</p>
             {visitLog.image && <img src={visitLog.image} alt={visitLog.title}/>}
+            <Rating value={visitLog.rating} fixed={true}/>
             <small className="text-center">등록날짜: {new Date(visitLog.visitDate).toLocaleString()}</small>
             <hr/>
             <div className="text-center">
