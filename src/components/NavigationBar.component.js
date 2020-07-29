@@ -22,11 +22,15 @@ export default function NavigationBar(props) {
     const toggleOpen = () => setIsOpen(!isOpen);
     const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-    const responseGoogle = (response) => {
+    const googleOnSuccess = (response) => {
         toggleModal();
         toggleOpen();
         setIsLoggedIn(true);
         props.onLogin(response);
+    };
+
+    const googleOnFailure = (response) => {
+        console.log(response);
     };
 
     return (
@@ -60,8 +64,8 @@ export default function NavigationBar(props) {
                                 </button>
                             )}
                             buttonText="Login"
-                            onSuccess={responseGoogle}
-                            onFailure={responseGoogle}
+                            onSuccess={googleOnSuccess}
+                            onFailure={googleOnFailure}
                             cookiePolicy={'single_host_origin'}
                         />
                     </ModalBody>
