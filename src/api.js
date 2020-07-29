@@ -8,7 +8,6 @@ export async function listVisitLogs(userId) {
 
 export async function createVisitLog(userId, entry) {
     const data = {...entry, userId: userId};
-    console.log(data);
     const response = await axios.post(`${API_URL}/api/logs/add`, data);
     return response.data;
 }

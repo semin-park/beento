@@ -20,7 +20,6 @@ export default function VisitLogForm(props) {
             } else {
                 log = await createVisitLog(userId, {...data, latitude: visitLog.latitude, longitude: visitLog.longitude});
             }
-            console.log(log);
             props.onSubmit();
         } catch (err) {
             console.error(err);

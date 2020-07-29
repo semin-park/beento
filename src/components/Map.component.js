@@ -138,7 +138,6 @@ export default function Map(props) {
                 <VisitLogContent
                     visitLog={popupTarget}
                     onMarkerUpdate={(log) => {
-                        console.log(log);
                         setLogAttempt(true);
                         setIsFormUpdate(true);
                         setFormDefault({
