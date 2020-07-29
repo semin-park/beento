@@ -10,6 +10,9 @@ import { AuthContext } from '../auth';
 
 export default function Map(props) {
     const loginInfo = useContext(AuthContext);
+    const loggedIn = () => {
+        return ('profileObj' in loginInfo);
+    };
     const [viewport, setViewport] = useState({
         width: '100vw',
         height: '100vh',
@@ -46,7 +49,7 @@ export default function Map(props) {
 
     const [visitLogs, setVisitLogs] = useState([]);
     const loadVisitLogs = () => {
-        if (!('profileObj' in loginInfo))
+        if (!loggedIn())
             return;
         listVisitLogs(loginInfo.profileObj.googleId).then((logs) => {
             setVisitLogs(logs);
@@ -79,7 +82,13 @@ export default function Map(props) {
 
     const [popupTarget, setPopupTarget] = useState(null);
     const [logAttempt, setLogAttempt] = useState(false);
+    const toggleLoginWarning = () => {
+    };
     const mapClickHandler = (event) => {
+        if (!loggedIn()) {
+            toggleLoginWarning();
+            return;
+        }
         if (event.target.localName === 'button') {
             return;
         }
