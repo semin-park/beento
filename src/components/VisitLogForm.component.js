@@ -1,20 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { AvForm, AvField, AvRadioGroup } from 'availity-reactstrap-validation';
-import { Button } from 'reactstrap';
 import { createVisitLog, updateVisitLog } from '../api';
 import Rating from './Rating.component';
 import { AuthContext } from '../auth';
 
 export default function VisitLogForm(props) {
     const loginInfo = useContext(AuthContext);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const {register, handleSubmit} = useForm();
 
     const onSubmit = async (data) => {
         try {
-            setLoading(true);
             const userId = loginInfo.profileObj.googleId;
             let log;
             const visitLog = props.visitLog;
@@ -28,7 +25,6 @@ export default function VisitLogForm(props) {
         } catch (err) {
             console.error(err);
             setError(err.message);
-            setLoading(false);
         }
     };
     return (
