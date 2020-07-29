@@ -14,5 +14,6 @@
 ### Features
 
 - [x] Add a navigation bar
-  - [ ] Add login with google / facebook
+  - [x] Add login with google
+  - [ ] Add login with facebook
 - [ ] Add a button that can retrieve user's current location

@@ -90,3 +90,9 @@ body {
 .rating.active > input:checked ~ label:hover,
 .rating.active > label:hover ~ input:checked ~ label, /* lighten current selection */
 .rating.active > input:checked ~ label:hover ~ label { color: #FFED85;  } 
+
+
+.btn-google {
+    background-color: #dd4b39;
+    color: #ffffff;
+}

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { AvForm, AvField, AvRadioGroup } from 'availity-reactstrap-validation';
 import { Button } from 'reactstrap';
-import { createVisitLog } from '../api';
+import { createVisitLog, updateVisitLog } from '../api';
 import Rating from './Rating.component';
+import { AuthContext } from '../auth';
 
 export default function VisitLogForm(props) {
+    const loginInfo = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const {register, handleSubmit} = useForm();
@@ -13,8 +15,15 @@ export default function VisitLogForm(props) {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const created = await createVisitLog({...data, latitude: props.visitLog.latitude, longitude: props.visitLog.longitude});
-            console.log(created);
+            const userId = loginInfo.profileObj.googleId;
+            let log;
+            const visitLog = props.visitLog;
+            if (props.update) {
+                log = await updateVisitLog(userId, visitLog._id, {...data, latitude: visitLog.latitude, longitude: visitLog.longitude});
+            } else {
+                log = await createVisitLog(userId, {...data, latitude: visitLog.latitude, longitude: visitLog.longitude});
+            }
+            console.log(log);
             props.onSubmit();
         } catch (err) {
             console.error(err);

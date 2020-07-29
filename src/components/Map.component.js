@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactMapGL from 'react-map-gl';
 import { listVisitLogs, deleteVisitLog } from '../api';
 import Marker from './Marker.component';
 import VisitLogPopup from './VisitLogPopup.component';
 import VisitLogForm from './VisitLogForm.component';
 import VisitLogContent from './VisitLogContent.component';
+import { AuthContext } from '../auth';
 
 
 export default function Map(props) {
+    const loginInfo = useContext(AuthContext);
     const [viewport, setViewport] = useState({
         width: '100vw',
         height: '100vh',
@@ -44,11 +46,13 @@ export default function Map(props) {
 
     const [visitLogs, setVisitLogs] = useState([]);
     const loadVisitLogs = () => {
-        listVisitLogs().then((logs) => {
+        if (!('profileObj' in loginInfo))
+            return;
+        listVisitLogs(loginInfo.profileObj.googleId).then((logs) => {
             setVisitLogs(logs);
         });
     };
-    useEffect(loadVisitLogs, []);
+    useEffect(loadVisitLogs, [loginInfo]);
 
     const abortForm = () => {
         setIsFormUpdate(false);
@@ -138,7 +142,7 @@ export default function Map(props) {
                         });
                     }}
                     onMarkerDelete={async () => {
-                        await deleteVisitLog(popupTarget._id);
+                        await deleteVisitLog(loginInfo.profileObj.googleId, popupTarget._id);
                         loadVisitLogs();
                         setPopupTarget(null);
                     }}

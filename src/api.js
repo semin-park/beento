@@ -1,27 +1,24 @@
 import axios from 'axios';
 const API_URL = 'http://localhost:5000';
 
-export async function listVisitLogs() {
-    const response = await axios.get(`${API_URL}/api/logs`);
+export async function listVisitLogs(userId) {
+    const response = await axios.get(`${API_URL}/api/logs/all/${userId}`);
     return response.data;
 }
 
-export async function createVisitLog(entry) {
-    const response = await axios.post(`${API_URL}/api/logs/add`, entry);
+export async function createVisitLog(userId, entry) {
+    const data = {...entry, userId: userId};
+    console.log(data);
+    const response = await axios.post(`${API_URL}/api/logs/add`, data);
     return response.data;
 }
 
-export async function getVisitLog(id) {
-    const response = await axios.get(`${API_URL}/api/logs/${id}`);
+export async function updateVisitLog(userId, postId, entry) {
+    const response = await axios.post(`${API_URL}/api/logs/update/${postId}`, {...entry, userId: userId});
     return response.data;
 }
 
-export async function updateVisitLog(id, entry) {
-    const response = await axios.post(`${API_URL}/api/logs/update/${id}`, entry);
-    return response.data;
-}
-
-export async function deleteVisitLog(id) {
-    const response = await axios.delete(`${API_URL}/api/logs/${id}`);
+export async function deleteVisitLog(userId, postId) {
+    const response = await axios.delete(`${API_URL}/api/logs/${postId}`, {userId: userId});
     return response.data;
 }
