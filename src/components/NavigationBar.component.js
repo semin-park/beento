@@ -35,7 +35,10 @@ export default function NavigationBar(props) {
 
     return (
         <Navbar color="light" light expand="md">
-            <NavbarBrand href="#">Been To</NavbarBrand>
+            <NavbarBrand href="#">
+                Been To&nbsp;&nbsp;
+                {loggedIn(loginInfo) && <img className="userImg" src={loginInfo.profileObj.imageUrl} alt="User image"/>}
+            </NavbarBrand>
             <NavbarToggler onClick={toggleOpen} />
             <Collapse isOpen={isOpen} navbar>
                 <Nav className="mr-auto" navbar>
