@@ -25,7 +25,8 @@ export default function Rating(props) {
             <fieldset className={props.fixed ? "rating" : "rating active"}>
                 {
                     [...Array(10).keys()].map(x => {
-                        return <Star {...props} target={(10 - x) / 2}/>
+                        const key = (10 - x) / 2;
+                        return <Star key={key} {...props} target={key}/>
                     })
                 }
             </fieldset>

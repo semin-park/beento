@@ -5,14 +5,11 @@ import Marker from './Marker.component';
 import VisitLogPopup from './VisitLogPopup.component';
 import VisitLogForm from './VisitLogForm.component';
 import VisitLogContent from './VisitLogContent.component';
-import { AuthContext } from '../auth';
+import { AuthContext, loggedIn } from '../auth';
 
 
 export default function Map(props) {
     const loginInfo = useContext(AuthContext);
-    const loggedIn = () => {
-        return ('profileObj' in loginInfo);
-    };
     const [viewport, setViewport] = useState({
         width: '100vw',
         height: '100vh',
@@ -49,8 +46,10 @@ export default function Map(props) {
 
     const [visitLogs, setVisitLogs] = useState([]);
     const loadVisitLogs = () => {
-        if (!loggedIn())
+        if (!loggedIn(loginInfo)) {
+            setVisitLogs([]);
             return;
+        }
         listVisitLogs(loginInfo.profileObj.googleId).then((logs) => {
             setVisitLogs(logs);
         });
@@ -85,7 +84,7 @@ export default function Map(props) {
     const toggleLoginWarning = () => {
     };
     const mapClickHandler = (event) => {
-        if (!loggedIn()) {
+        if (!loggedIn(loginInfo)) {
             toggleLoginWarning();
             return;
         }

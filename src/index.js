@@ -6,9 +6,12 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './index.css';
 
+const loginInfoString = localStorage.getItem('beento.loginInfo');
+let info = (loginInfoString !== null) ? JSON.parse(loginInfoString) : null;
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App loginInfo={info}/>
   </React.StrictMode>,
   document.getElementById('root')
 );

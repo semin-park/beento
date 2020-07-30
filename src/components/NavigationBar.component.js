@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Button,
     Collapse,
@@ -14,9 +14,10 @@ import {
     NavLink,
 } from 'reactstrap';
 import GoogleLogin from 'react-google-login';
+import { AuthContext, loggedIn } from '../auth';
 
 export default function NavigationBar(props) {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const loginInfo = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const toggleOpen = () => setIsOpen(!isOpen);
@@ -25,7 +26,6 @@ export default function NavigationBar(props) {
     const googleOnSuccess = (response) => {
         toggleModal();
         toggleOpen();
-        setIsLoggedIn(true);
         props.onLogin(response);
     };
 
@@ -41,8 +41,8 @@ export default function NavigationBar(props) {
                 <Nav className="mr-auto" navbar>
                     <NavItem>
                     {
-                        isLoggedIn ?
-                        <NavLink href='#'>Logout</NavLink>
+                        loggedIn(loginInfo) ?
+                        <NavLink href='#' onClick={props.onLogout}>Logout</NavLink>
                         :
                         <NavLink href='#' onClick={toggleModal}>Login</NavLink>
                     }
